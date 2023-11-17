@@ -15,7 +15,7 @@ func checkProximityAndCollisions(game *Game) {
 	checkPlayerEnemy1Proximity(game)
 }
 func checkShotsTakenAtEnemy1(game *Game) {
-	for i, _ := range game.enemies.enemy1 {
+	for i, _ := range game.enemies.rainbowMan {
 		for j, _ := range game.player.fireballs {
 			if isEnemy1Hit(game, i, j) {
 				playOofSound(game)
@@ -25,7 +25,7 @@ func checkShotsTakenAtEnemy1(game *Game) {
 	}
 }
 func isEnemy1Hit(game *Game, i int, j int) bool {
-	if i < len(game.enemies.enemy1) && j < len(game.player.fireballs) {
+	if i < len(game.enemies.rainbowMan) && j < len(game.player.fireballs) {
 		attackBounds := collision.BoundingBox{
 			X:      float64(game.player.fireballs[j].xLoc),
 			Y:      float64(game.player.fireballs[j].yLoc),
@@ -33,24 +33,24 @@ func isEnemy1Hit(game *Game, i int, j int) bool {
 			Height: float64(PLAYER_FIREBALL_FRAME_HEIGHT - 15),
 		}
 		enemyBounds := collision.BoundingBox{
-			X:      float64(game.enemies.enemy1[i].xLoc),
-			Y:      float64(game.enemies.enemy1[i].yLoc),
+			X:      float64(game.enemies.rainbowMan[i].xLoc),
+			Y:      float64(game.enemies.rainbowMan[i].yLoc),
 			Width:  float64(PLAYER_FRAME_WIDTH - 25),
 			Height: float64(PLAYER_FRAME_HEIGHT - 25),
 		}
 		if collision.AABBCollision(attackBounds, enemyBounds) {
-			game.enemies.enemy1[i].health -= game.player.fireballs[j].damage
+			game.enemies.rainbowMan[i].health -= game.player.fireballs[j].damage
 			return true
 		}
 	}
 	return false
 }
 func checkEnemy1ShotsFired(game *Game) {
-	for i, _ := range game.enemies.enemy1 {
-		for j, _ := range game.enemies.enemy1[i].attacks {
+	for i, _ := range game.enemies.rainbowMan {
+		for j, _ := range game.enemies.rainbowMan[i].attacks {
 			if isPlayer1HitByEnemy1(game, i, j) {
 				playOwSound(game)
-				lowerPlayerHealth(game, game.enemies.enemy1[i].attackPower)
+				lowerPlayerHealth(game, game.enemies.rainbowMan[i].attackPower)
 				removeSpentEnemy1Fireball(game, i, j)
 			}
 		}
@@ -58,10 +58,10 @@ func checkEnemy1ShotsFired(game *Game) {
 }
 func isPlayer1HitByEnemy1(game *Game, i int, j int) bool {
 
-	if i < len(game.enemies.enemy1) && j < len(game.enemies.enemy1[i].attacks) {
+	if i < len(game.enemies.rainbowMan) && j < len(game.enemies.rainbowMan[i].attacks) {
 		attackBounds := collision.BoundingBox{
-			X:      float64(game.enemies.enemy1[i].attacks[j].xLoc),
-			Y:      float64(game.enemies.enemy1[i].attacks[j].yLoc),
+			X:      float64(game.enemies.rainbowMan[i].attacks[j].xLoc),
+			Y:      float64(game.enemies.rainbowMan[i].attacks[j].yLoc),
 			Width:  float64(ENEMY_ATTACK_FRAME_WIDTH - 15),
 			Height: float64(ENEMY_ATTACK_FRAME_HEIGHT - 15),
 		}
@@ -79,18 +79,18 @@ func isPlayer1HitByEnemy1(game *Game, i int, j int) bool {
 	return false
 }
 func checkPlayerEnemy1Proximity(game *Game) {
-	for i, _ := range game.enemies.enemy1 {
+	for i, _ := range game.enemies.rainbowMan {
 		playerX, playerY := game.player.xLoc, game.player.yLoc
-		enemyX, enemyY := game.enemies.enemy1[i].xLoc, game.enemies.enemy1[i].yLoc
+		enemyX, enemyY := game.enemies.rainbowMan[i].xLoc, game.enemies.rainbowMan[i].yLoc
 		distance := math.Sqrt(math.Pow(float64(playerX-enemyX), 2) + math.Pow(float64(playerY-enemyY), 2))
-		if 200 <= int(distance) && int(distance) <= game.enemies.enemy1[i].distanceThreshold {
-			game.enemies.enemy1[i].isChasing = true
+		if 200 <= int(distance) && int(distance) <= game.enemies.rainbowMan[i].distanceThreshold {
+			game.enemies.rainbowMan[i].isChasing = true
 		} else if int(distance) < 200 {
-			game.enemies.enemy1[i].isInRange = true
-			game.enemies.enemy1[i].isChasing = false
+			game.enemies.rainbowMan[i].isInRange = true
+			game.enemies.rainbowMan[i].isChasing = false
 		} else {
-			game.enemies.enemy1[i].isInRange = false
-			game.enemies.enemy1[i].isChasing = false
+			game.enemies.rainbowMan[i].isInRange = false
+			game.enemies.rainbowMan[i].isChasing = false
 		}
 	}
 }

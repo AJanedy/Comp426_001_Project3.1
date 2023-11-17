@@ -34,37 +34,37 @@ func rewindPlayerFireballAnimation(game *Game, i int) {
 	game.player.fireballs[i].column += 1
 	game.player.fireballs[i].row = 0
 }
-func moveIceWall(game *Game) {
+func moveBuzzBall(game *Game) {
 	for i, _ := range game.player.iceWalls {
-		playerIceWallsDeltaXY(game, i)
+		playerBuzzBallDeltaXY(game, i)
 	}
 }
-func playerIceWallsDeltaXY(game *Game, i int) {
+func playerBuzzBallDeltaXY(game *Game, i int) {
 	game.player.iceWalls[i].xLoc += math.Cos(game.player.iceWalls[i].trajectory) * 5
 	game.player.iceWalls[i].yLoc += math.Sin(game.player.iceWalls[i].trajectory) * 5
 }
-func animateIceWall(game *Game) {
+func animateBuzzBall(game *Game) {
 	for i, _ := range game.player.iceWalls {
-		incrementPlayerIceWallFrameDelay(game)
+		incrementPlayerBuzzBallFrameDelay(game)
 		if i < len(game.player.iceWalls) && game.player.iceWalls[i].frameDelay%2 == 0 {
 			game.player.iceWalls[i].row += 1
-			if game.player.iceWalls[i].row >= ICE_FRAMES_PER_SHEET { // frames per row
+			if game.player.iceWalls[i].row >= FRAMES_PER_SHEET { // frames per row
 				game.player.iceWalls[i].column += 1
 				game.player.iceWalls[i].row = 0
 				if game.player.iceWalls[i].column > 5 {
-					removeIceWall(game, i)
+					removeBuzzBall(game, i)
 				}
 			}
 		}
 	}
 }
 
-func removeIceWall(game *Game, i int) {
+func removeBuzzBall(game *Game, i int) {
 	game.player.iceWalls[i] = game.player.iceWalls[len(game.player.iceWalls)-1]
 	game.player.iceWalls = game.player.iceWalls[:len(game.player.iceWalls)-1]
 }
 
-func incrementPlayerIceWallFrameDelay(game *Game) {
+func incrementPlayerBuzzBallFrameDelay(game *Game) {
 	for i, _ := range game.player.iceWalls {
 		game.player.iceWalls[i].frameDelay += 1
 	}

@@ -14,9 +14,10 @@ const (
 	PLAYER_FRAME_WIDTH     = 31
 	PLAYER_FRAME_HEIGHT    = 46
 	FRAMES_PER_SHEET       = 8
-	LEFT_CLICK_SHOT_CLOCK  = time.Second * 3
-	RIGHT_CLICK_SHOT_CLOCK = time.Second * 15
-	Q_ATTACK_SHOT_CLOCK    = time.Second
+	FIREBALL_SHOT_CLOCK    = time.Second * 3
+	ELECTRICITY_SHOT_CLOCK = time.Second * 5
+	NUKE_SHOT_CLOCK        = time.Second * 15
+	TELEPORT_SHOT_CLOCK    = time.Second * 10
 )
 const (
 	NORTH = iota
@@ -27,8 +28,14 @@ const (
 	SOUTH_WEST
 	WEST
 	NORTH_WEST
+	DISAPPEARING
+	REAPPEARING
+	STAND_STILL
 )
 const (
+	BEE_FRAME_WIDTH              = 100
+	BEE_FRAME_HEIGHT             = 100
+	BEE_FRAMES_PER_SHEET         = 5
 	PLAYER_FIREBALL_FRAME_WIDTH  = 38
 	PLAYER_FIREBALL_FRAME_HEIGHT = 37
 	ENEMY_ATTACK_FRAME_WIDTH     = 63
@@ -36,9 +43,6 @@ const (
 	EXPLOSION_FRAME_WIDTH        = 100
 	EXPLOSION_FRAME_HEIGHT       = 73
 	EXPLOSION_FRAMES_PER_SHEET   = 5
-	ICE_FRAME_WIDTH              = 100
-	ICE_FRAME_HEIGHT             = 186
-	ICE_FRAMES_PER_SHEET         = 6
 )
 const (
 	ATTACK_1_BASE_DAMAGE = 25
@@ -66,6 +70,7 @@ type Player struct {
 	armor        int
 	castSpeed    int
 	direction    int
+	canMove      bool
 	isMoving     bool
 	frame        int
 	frameDelay   int
@@ -86,6 +91,8 @@ type Enemy struct {
 	shotTimer         time.Time
 	xLoc              float64
 	yLoc              float64
+	startingXLoc      float64
+	startingYLoc      float64
 	health            int
 	attackPower       int
 	degreesDirection  float64
@@ -100,9 +107,9 @@ type Enemy struct {
 	frameDelay        int
 }
 type AllEnemies struct {
-	enemy1 []Enemy
-	enemy2 []Enemy
-	enemy3 []Enemy
+	rainbowMan []Enemy
+	bee        []Enemy
+	enemy3     []Enemy
 }
 type Attack struct {
 	animation  *ebiten.Image
@@ -154,10 +161,10 @@ type Cursor struct {
 	yLoc   float64
 }
 type GameTimers struct {
-	attack1Timer time.Time
-	attack2Timer time.Time
-	qAttackTimer time.Time
-	eAttackTimer time.Time
+	fireballTimer    time.Time
+	electricityTimer time.Time
+	nukeTimer        time.Time
+	teleportTimer    time.Time
 }
 type Game struct {
 	maps       AllMaps

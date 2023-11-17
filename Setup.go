@@ -9,6 +9,7 @@ import (
 	"golang.org/x/image/font/opentype"
 	"log"
 	"math"
+	"math/rand"
 	"time"
 )
 
@@ -32,7 +33,7 @@ func setupGameStruct() Game {
 }
 func setupPlayerAsset() Player {
 	newPlayer := Player{
-		playerSprite: LoadEmbeddedImage("", "walking_man.png"),
+		playerSprite: LoadEmbeddedImage("", "walking_man3.png"),
 		fireballs:    make([]Attack, 0, 20),
 		nukes:        make([]Attack, 0, 3),
 		xLoc:         WINDOW_WIDTH / 4,
@@ -43,6 +44,7 @@ func setupPlayerAsset() Player {
 		magicPower:   1,
 		armor:        1,
 		castSpeed:    1,
+		canMove:      true,
 	}
 	return newPlayer
 }
@@ -98,30 +100,38 @@ func setupTypeFace() font.Face {
 }
 func setupEnemyAssets() AllEnemies {
 	allEnemies := AllEnemies{
-		enemy1: make([]Enemy, 0, 15),
-		//enemy2: setupEnemy2(),
+		rainbowMan: make([]Enemy, 0, 15),
+		bee:        make([]Enemy, 0, 15),
 		//enemy3: setupEnemy3(),
 	}
 	for i := 700; i < 1000; i += 100 {
-		for j := 1; j < (10); j += 2 {
-			allEnemies.enemy1 = append(allEnemies.enemy1, setupEnemy(i, j*96))
+		for j := 1; j < 10; j += 2 {
+			allEnemies.rainbowMan = append(allEnemies.rainbowMan, setupEnemy(i, j*96, "rainbow_man.png"))
+		}
+	}
+	for i := 700; i < 1000; i += 100 {
+		for j := 1; j < 10; j += 2 {
+			allEnemies.bee = append(allEnemies.bee, setupEnemy(i, j*96, "bee.png"))
 		}
 	}
 	return allEnemies
 }
-func setupEnemy(xLoc int, yLoc int) Enemy {
+func setupEnemy(xLoc int, yLoc int, file string) Enemy {
 	enemy := Enemy{
-		enemySprite:       LoadEmbeddedImage("", "rainbow_man.png"),
-		xLoc:              float64(xLoc),
-		yLoc:              float64(yLoc),
+		enemySprite:       LoadEmbeddedImage("", file),
+		xLoc:              float64(xLoc - 100),
+		yLoc:              float64(yLoc - 50),
+		startingXLoc:      float64(xLoc - 100),
+		startingYLoc:      float64(xLoc - 50),
 		attackPower:       15,
 		health:            100,
-		direction:         6,
+		direction:         5,
 		speed:             1,
 		distanceThreshold: 400,
 		shotTimer:         time.Now(),
+		frame:             rand.Intn(6),
 	}
-	fmt.Println("FIXME: initializing enemy1")
+	fmt.Println("FIXME: initializing rainbowMan")
 	return enemy
 }
 func setupShootingAttack(xLoc int, yLoc int, game Game) Attack {
@@ -143,8 +153,8 @@ func setupStationaryAttack(game Game) Attack {
 }
 func setupEnemyAttack(trajectory float64, game Game, i int) Attack {
 	attack := Attack{
-		xLoc:       float64(game.enemies.enemy1[i].xLoc),
-		yLoc:       float64(game.enemies.enemy1[i].yLoc),
+		xLoc:       float64(game.enemies.rainbowMan[i].xLoc),
+		yLoc:       float64(game.enemies.rainbowMan[i].yLoc),
 		trajectory: trajectory,
 		damage:     15,
 	}
@@ -158,10 +168,10 @@ func setupHUD() HUD {
 }
 func setupGameTimers() GameTimers {
 	gameTimers := GameTimers{
-		attack1Timer: time.Now(),
-		attack2Timer: time.Now(),
-		qAttackTimer: time.Now(),
-		eAttackTimer: time.Now(),
+		fireballTimer:    time.Now(),
+		electricityTimer: time.Now(),
+		nukeTimer:        time.Now(),
+		teleportTimer:    time.Now(),
 	}
 	return gameTimers
 }
