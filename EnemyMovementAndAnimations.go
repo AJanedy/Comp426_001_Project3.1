@@ -73,7 +73,7 @@ func enemy1Attackers(game *Game) {
 }
 func checkEnemyFiringRange(game *Game, i int) {
 	if game.enemies.enemy1[i].isInRange {
-		if time.Since(game.enemies.enemy1[i].shotTimer) >= LEFT_CLICK_SHOT_CLOCK {
+		if time.Since(game.enemies.enemy1[i].shotTimer) >= FIREBALL_SHOT_CLOCK {
 			enemy1Attack(game, i)
 			resetEnemy1AttackCooldown(game, i)
 			playPewPewSound(game)

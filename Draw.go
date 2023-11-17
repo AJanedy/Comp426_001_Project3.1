@@ -25,6 +25,7 @@ func drawHud(game Game, screen *ebiten.Image) {
 	drawPlayerAttributes(game, screen)
 	drawCoolDowns(game, screen)
 	drawCursor(game, screen)
+	drawWASD(game, screen)
 }
 func drawEnemy1Animations(game Game, screen *ebiten.Image) {
 	drawLevelOneEnemies(game, screen)
@@ -91,28 +92,56 @@ func drawPlayerAttributes(game Game, screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, "Magic Power: "+strconv.Itoa(game.player.magicPower), 100, 840)
 }
 func drawCoolDowns(game Game, screen *ebiten.Image) {
-	leftClickCooldown := time.Since(game.gameTimers.attack1Timer).Seconds() / 2
-	rightClickCooldown := time.Since(game.gameTimers.attack2Timer).Seconds() / 15
+	fireBallCoolDown := time.Since(game.gameTimers.fireballTimer).Seconds() / 3
+	electricityCoolDown := time.Since(game.gameTimers.electricityTimer).Seconds() / 5
+	nukeCoolDown := time.Since(game.gameTimers.nukeTimer).Seconds() / 15
+	teleportCoolDown := time.Since(game.gameTimers.teleportTimer).Seconds() / 10
+
 	barWidth := 74
 	barHeight := 4
 
-	if leftClickCooldown > 1.0 {
-		leftClickCooldown = 1
+	if fireBallCoolDown > 1.0 {
+		fireBallCoolDown = 1
 	}
-	if rightClickCooldown > 1.0 {
-		rightClickCooldown = 1
+	if electricityCoolDown > 1.0 {
+		electricityCoolDown = 1
 	}
-	ebitenutil.DebugPrintAt(screen, "Left Click", 100, 860)
+	if nukeCoolDown > 1.0 {
+		nukeCoolDown = 1
+	}
+	if teleportCoolDown > 1.0 {
+		teleportCoolDown = 1
+	}
+	ebitenutil.DebugPrintAt(screen, "Fireball", 100, 860)
 	ebitenutil.DrawRect(screen, 175, 865, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 865, float64(barWidth)*leftClickCooldown,
+	ebitenutil.DrawRect(screen, 175, 865, float64(barWidth)*fireBallCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Right Click", 100, 880)
+	ebitenutil.DebugPrintAt(screen, "Electricity", 100, 880)
 	ebitenutil.DrawRect(screen, 175, 885, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 885, float64(barWidth)*rightClickCooldown,
+	ebitenutil.DrawRect(screen, 175, 885, float64(barWidth)*electricityCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
+
+	ebitenutil.DebugPrintAt(screen, "Nuke", 100, 900)
+	ebitenutil.DrawRect(screen, 175, 905, float64(barWidth),
+		float64(barHeight), color.Gray{192})
+	ebitenutil.DrawRect(screen, 175, 905, float64(barWidth)*nukeCoolDown,
+		float64(barHeight), color.RGBA{255, 0, 0, 255})
+
+	ebitenutil.DebugPrintAt(screen, "Teleport", 100, 920)
+	ebitenutil.DrawRect(screen, 175, 925, float64(barWidth),
+		float64(barHeight), color.Gray{192})
+	ebitenutil.DrawRect(screen, 175, 925, float64(barWidth)*teleportCoolDown,
+		float64(barHeight), color.RGBA{255, 0, 0, 255})
+}
+func drawWASD(game Game, screen *ebiten.Image) {
+	drawOption := &ebiten.DrawImageOptions{}
+	drawOption.GeoM.Reset()
+	drawOption.GeoM.Translate(75, 50)
+	screen.DrawImage(game.gameHUD.WASD, drawOption)
+	ebitenutil.DebugPrintAt(screen, "Movement", 105, 150)
 }
 func drawLevelOneEnemies(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}

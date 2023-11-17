@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"math"
 	"time"
 )
 
@@ -33,28 +34,68 @@ func getPlayerInput(game *Game) error {
 		game.direction.moveWest = false
 	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		if time.Since(game.gameTimers.attack1Timer) >= LEFT_CLICK_SHOT_CLOCK {
+		if time.Since(game.gameTimers.fireballTimer) >= FIREBALL_SHOT_CLOCK {
 			mouseX, mouseY := ebiten.CursorPosition()
 			game.player.fireballs = append(game.player.fireballs,
 				setupShootingAttack(mouseX, mouseY, *game))
 			playAvidiKidiviSound(game)
-			game.gameTimers.attack1Timer = time.Now()
-		}
-	}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		if time.Since(game.gameTimers.attack2Timer) >= RIGHT_CLICK_SHOT_CLOCK {
-			game.player.nukes = append(game.player.nukes,
-				setupStationaryAttack(*game))
-			game.gameTimers.attack2Timer = time.Now()
+			game.gameTimers.fireballTimer = time.Now()
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
-		mouseX, mouseY := ebiten.CursorPosition()
-		if time.Since(game.gameTimers.qAttackTimer) >= Q_ATTACK_SHOT_CLOCK {
+		if time.Since(game.gameTimers.electricityTimer) >= NUKE_SHOT_CLOCK {
+			game.player.nukes = append(game.player.nukes,
+				setupStationaryAttack(*game))
+			game.gameTimers.electricityTimer = time.Now()
+		}
+	}
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
+		if time.Since(game.gameTimers.nukeTimer) >= ELECTRICITY_SHOT_CLOCK {
+			mouseX, mouseY := ebiten.CursorPosition()
 			game.player.iceWalls = append(game.player.iceWalls,
 				setupShootingAttack(mouseX, mouseY, *game))
-			game.gameTimers.qAttackTimer = time.Now()
+			game.gameTimers.nukeTimer = time.Now()
+		}
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
+		if time.Since(game.gameTimers.teleportTimer) >= TELEPORT_SHOT_CLOCK {
+			mouseX, mouseY := game.cursor.xLoc, game.cursor.yLoc
+			disappearPlayer(game)
+
+			go reappearPlayer(game, mouseX, mouseY)
+			//game.player.canMove = true
 		}
 	}
 	return nil
+}
+
+func reappearPlayer(game *Game, mouseX float64, mouseY float64) {
+
+	time.Sleep(time.Second)
+	game.player.frame = 0
+	game.player.direction = REAPPEARING
+	game.player.xLoc = mouseX
+	game.player.yLoc = mouseY
+	time.Sleep(time.Second)
+	game.player.canMove = true
+}
+
+func disappearPlayer(game *Game) {
+	game.player.canMove = false
+	game.player.frame = 0
+	game.player.direction = DISAPPEARING
+}
+func limitCursorDistanceFromPlayer(game *Game) {
+	maxDistance := 380
+	mouseX, mouseY := ebiten.CursorPosition()
+	dX := mouseX - int(game.player.xLoc)
+	dY := mouseY - int(game.player.yLoc)
+	distance := math.Sqrt(float64(dX*dX + dY*dY))
+	game.cursor.xLoc = float64(mouseX)
+	game.cursor.yLoc = float64(mouseY)
+	if distance > float64(maxDistance) {
+		angle := math.Atan2(float64(dY), float64(dX))
+		game.cursor.xLoc = game.player.xLoc + float64(maxDistance)*math.Cos(angle)
+		game.cursor.yLoc = game.player.yLoc + float64(maxDistance)*math.Sin(angle)
+	}
 }

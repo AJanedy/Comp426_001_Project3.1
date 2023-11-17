@@ -17,14 +17,19 @@ func updateEnemy1Animations(game *Game) {
 }
 
 func updatePlayerAnimations(game *Game) {
-	movePlayer(game)
+
 	moveFireballs(game)
 	animatePlayerFireballs(game)
-	moveIceWall(game)
-	animateIceWall(game)
+	moveBuzzBall(game)
+	animateBuzzBall(game)
 	limitCursorDistanceFromPlayer(game)
 	animatePlayerNuke(game)
 	getPlayerInput(game)
+	if game.player.canMove {
+		movePlayer(game)
+	}
+	animatePlayer(game)
+
 }
 func (game Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return outsideWidth, outsideHeight

@@ -32,7 +32,7 @@ func setupGameStruct() Game {
 }
 func setupPlayerAsset() Player {
 	newPlayer := Player{
-		playerSprite: LoadEmbeddedImage("", "walking_man.png"),
+		playerSprite: LoadEmbeddedImage("", "walking_man3.png"),
 		fireballs:    make([]Attack, 0, 20),
 		nukes:        make([]Attack, 0, 3),
 		xLoc:         WINDOW_WIDTH / 4,
@@ -43,6 +43,7 @@ func setupPlayerAsset() Player {
 		magicPower:   1,
 		armor:        1,
 		castSpeed:    1,
+		canMove:      true,
 	}
 	return newPlayer
 }
@@ -158,10 +159,10 @@ func setupHUD() HUD {
 }
 func setupGameTimers() GameTimers {
 	gameTimers := GameTimers{
-		attack1Timer: time.Now(),
-		attack2Timer: time.Now(),
-		qAttackTimer: time.Now(),
-		eAttackTimer: time.Now(),
+		fireballTimer:    time.Now(),
+		electricityTimer: time.Now(),
+		nukeTimer:        time.Now(),
+		teleportTimer:    time.Now(),
 	}
 	return gameTimers
 }

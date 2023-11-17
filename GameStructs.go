@@ -14,9 +14,10 @@ const (
 	PLAYER_FRAME_WIDTH     = 31
 	PLAYER_FRAME_HEIGHT    = 46
 	FRAMES_PER_SHEET       = 8
-	LEFT_CLICK_SHOT_CLOCK  = time.Second * 3
-	RIGHT_CLICK_SHOT_CLOCK = time.Second * 15
-	Q_ATTACK_SHOT_CLOCK    = time.Second
+	FIREBALL_SHOT_CLOCK    = time.Second * 3
+	ELECTRICITY_SHOT_CLOCK = time.Second * 5
+	NUKE_SHOT_CLOCK        = time.Second * 15
+	TELEPORT_SHOT_CLOCK    = time.Second * 10
 )
 const (
 	NORTH = iota
@@ -27,6 +28,9 @@ const (
 	SOUTH_WEST
 	WEST
 	NORTH_WEST
+	DISAPPEARING
+	REAPPEARING
+	STAND_STILL
 )
 const (
 	PLAYER_FIREBALL_FRAME_WIDTH  = 38
@@ -66,6 +70,7 @@ type Player struct {
 	armor        int
 	castSpeed    int
 	direction    int
+	canMove      bool
 	isMoving     bool
 	frame        int
 	frameDelay   int
@@ -154,10 +159,10 @@ type Cursor struct {
 	yLoc   float64
 }
 type GameTimers struct {
-	attack1Timer time.Time
-	attack2Timer time.Time
-	qAttackTimer time.Time
-	eAttackTimer time.Time
+	fireballTimer    time.Time
+	electricityTimer time.Time
+	nukeTimer        time.Time
+	teleportTimer    time.Time
 }
 type Game struct {
 	maps       AllMaps
