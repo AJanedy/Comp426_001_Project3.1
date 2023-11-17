@@ -2,8 +2,8 @@ package main
 
 func (game *Game) Update() error {
 	updatePlayerAnimations(game)
-	//updateRainbowMenAnimations(game)
-	//checkProximityAndCollisions(game)
+	updateRainbowMenAnimations(game)
+	checkProximityAndCollisions(game)
 	updateBeeAnimations(game)
 	return nil
 }
