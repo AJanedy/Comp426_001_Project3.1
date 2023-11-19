@@ -10,10 +10,70 @@ import (
 )
 
 func (game Game) Draw(screen *ebiten.Image) {
+	//drawLevelTwo(game, screen)
+	drawLevelThree(game, screen)
 	drawPlayerAnimations(game, screen)
 	drawHud(game, screen)
 	//drawEnemy1Animations(game, screen)
-	drawEnemy2Animations(game, screen)
+	//drawEnemy2Animations(game, screen)
+}
+func drawLevelTwo(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for tileY := 0; tileY < game.maps.level2.level.Height; tileY += 1 {
+		for tileX := 0; tileX < game.maps.level2.level.Width; tileX += 1 {
+			drawOptions.GeoM.Reset()
+			TileXpos := float64(game.maps.level2.level.TileWidth * tileX)
+			TileYpos := float64(game.maps.level2.level.TileHeight * tileY)
+			drawOptions.GeoM.Translate(TileXpos, TileYpos)
+			tileToDraw :=
+				game.maps.level2.level.Layers[0].Tiles[tileY*game.maps.level2.level.Width+tileX]
+			ebitenTileToDraw := game.maps.level2.tileHash[tileToDraw.ID]
+			screen.DrawImage(ebitenTileToDraw,
+				drawOptions)
+		}
+	}
+	for tileY := 0; tileY < game.maps.level2.level.Height; tileY += 1 {
+		for tileX := 0; tileX < game.maps.level2.level.Width; tileX += 1 {
+			drawOptions.GeoM.Reset()
+			TileXpos := float64(game.maps.level2.level.TileWidth * tileX)
+			TileYpos := float64(game.maps.level2.level.TileHeight * tileY)
+			drawOptions.GeoM.Translate(TileXpos, TileYpos)
+			tileToDraw :=
+				game.maps.level2.level.Layers[1].Tiles[tileY*game.maps.level2.level.Width+tileX]
+			ebitenTileToDraw := game.maps.level2.tileHash[tileToDraw.ID]
+			screen.DrawImage(ebitenTileToDraw,
+				drawOptions)
+		}
+	}
+}
+func drawLevelThree(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for tileY := 0; tileY < game.maps.level3[game.maps.frame].level.Height; tileY += 1 {
+		for tileX := 0; tileX < game.maps.level3[game.maps.frame].level.Width; tileX += 1 {
+			drawOptions.GeoM.Reset()
+			TileXpos := float64(game.maps.level3[game.maps.frame].level.TileWidth * tileX)
+			TileYpos := float64(game.maps.level3[game.maps.frame].level.TileHeight * tileY)
+			drawOptions.GeoM.Translate(TileXpos, TileYpos)
+			tileToDraw :=
+				game.maps.level3[game.maps.frame].level.Layers[0].Tiles[tileY*game.maps.level3[game.maps.frame].level.Width+tileX]
+			ebitenTileToDraw := game.maps.level3[game.maps.frame].tileHash[tileToDraw.ID]
+			screen.DrawImage(ebitenTileToDraw,
+				drawOptions)
+		}
+	}
+	for tileY := 0; tileY < game.maps.level3[game.maps.frame].level.Height; tileY += 1 {
+		for tileX := 0; tileX < game.maps.level3[game.maps.frame].level.Width; tileX += 1 {
+			drawOptions.GeoM.Reset()
+			TileXpos := float64(game.maps.level3[game.maps.frame].level.TileWidth * tileX)
+			TileYpos := float64(game.maps.level3[game.maps.frame].level.TileHeight * tileY)
+			drawOptions.GeoM.Translate(TileXpos, TileYpos)
+			tileToDraw :=
+				game.maps.level3[game.maps.frame].level.Layers[1].Tiles[tileY*game.maps.level3[game.maps.frame].level.Width+tileX]
+			ebitenTileToDraw := game.maps.level3[game.maps.frame].tileHash[tileToDraw.ID]
+			screen.DrawImage(ebitenTileToDraw,
+				drawOptions)
+		}
+	}
 }
 func drawPlayerAnimations(game Game, screen *ebiten.Image) {
 	drawPlayer(game, screen)
@@ -91,9 +151,9 @@ func drawHealthBar(game Game, screen *ebiten.Image) {
 		float64(currentBarWidth), float64(barHeight), color.RGBA{255, 0, 0, 255})
 }
 func drawPlayerAttributes(game Game, screen *ebiten.Image) {
-	ebitenutil.DebugPrintAt(screen, "Health: "+strconv.Itoa(game.player.health), 100, 800)
-	ebitenutil.DebugPrintAt(screen, "Armor: "+strconv.Itoa(game.player.armor), 100, 820)
-	ebitenutil.DebugPrintAt(screen, "Magic Power: "+strconv.Itoa(game.player.magicPower), 100, 840)
+	ebitenutil.DebugPrintAt(screen, "Health: "+strconv.Itoa(game.player.health), 70, 770)
+	ebitenutil.DebugPrintAt(screen, "Armor: "+strconv.Itoa(game.player.armor), 70, 790)
+	ebitenutil.DebugPrintAt(screen, "Magic Power: "+strconv.Itoa(game.player.magicPower), 70, 810)
 }
 func drawCoolDowns(game Game, screen *ebiten.Image) {
 	fireBallCoolDown := time.Since(game.gameTimers.fireballTimer).Seconds() / 3
@@ -116,28 +176,28 @@ func drawCoolDowns(game Game, screen *ebiten.Image) {
 	if teleportCoolDown > 1.0 {
 		teleportCoolDown = 1
 	}
-	ebitenutil.DebugPrintAt(screen, "Fireball", 100, 860)
-	ebitenutil.DrawRect(screen, 175, 865, float64(barWidth),
+	ebitenutil.DebugPrintAt(screen, "Fireball                  LClick", 70, 830)
+	ebitenutil.DrawRect(screen, 145, 835, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 865, float64(barWidth)*fireBallCoolDown,
+	ebitenutil.DrawRect(screen, 145, 835, float64(barWidth)*fireBallCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Electricity", 100, 880)
-	ebitenutil.DrawRect(screen, 175, 885, float64(barWidth),
+	ebitenutil.DebugPrintAt(screen, "Electricity               RClick", 70, 850)
+	ebitenutil.DrawRect(screen, 145, 855, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 885, float64(barWidth)*electricityCoolDown,
+	ebitenutil.DrawRect(screen, 145, 855, float64(barWidth)*electricityCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Nuke", 100, 900)
-	ebitenutil.DrawRect(screen, 175, 905, float64(barWidth),
+	ebitenutil.DebugPrintAt(screen, "Nuke                      Q", 70, 870)
+	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 905, float64(barWidth)*nukeCoolDown,
+	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth)*nukeCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Teleport", 100, 920)
-	ebitenutil.DrawRect(screen, 175, 925, float64(barWidth),
+	ebitenutil.DebugPrintAt(screen, "Teleport                  E", 70, 890)
+	ebitenutil.DrawRect(screen, 145, 895, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 175, 925, float64(barWidth)*teleportCoolDown,
+	ebitenutil.DrawRect(screen, 145, 895, float64(barWidth)*teleportCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 }
 func drawWASD(game Game, screen *ebiten.Image) {

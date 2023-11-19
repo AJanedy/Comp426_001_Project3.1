@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/lafriks/go-tiled"
 	"golang.org/x/image/font"
+	"golang.org/x/sys/windows"
 	"time"
 )
 
@@ -53,9 +54,18 @@ type Map struct {
 	tileHash map[uint32]*ebiten.Image
 }
 type AllMaps struct {
-	level1 Map
-	level2 Map
-	level3 Map
+	level1     Map
+	level2     Map
+	level3     []Map
+	frame      int
+	frameDelay int
+}
+type BarrierTile struct {
+	barrierTile tiled.LayerTile
+	xLoc        int
+	yLoc        int
+	height      int
+	width       int
 }
 type Player struct {
 	playerSprite *ebiten.Image
@@ -167,14 +177,17 @@ type GameTimers struct {
 	teleportTimer    time.Time
 }
 type Game struct {
-	maps       AllMaps
-	cursor     Cursor
-	player     Player
-	direction  Movement
-	enemies    AllEnemies
-	animations AllAnimations
-	gameSounds SoundEffects
-	gameTimers GameTimers
-	typeface   font.Face
-	gameHUD    HUD
+	maps         AllMaps
+	barrierTiles []BarrierTile
+	wallLocation windows.Coord
+	wallDetected bool
+	cursor       Cursor
+	player       Player
+	direction    Movement
+	enemies      AllEnemies
+	animations   AllAnimations
+	gameSounds   SoundEffects
+	gameTimers   GameTimers
+	typeface     font.Face
+	gameHUD      HUD
 }

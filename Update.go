@@ -2,9 +2,10 @@ package main
 
 func (game *Game) Update() error {
 	updatePlayerAnimations(game)
-	updateRainbowMenAnimations(game)
+	//updateRainbowMenAnimations(game)
 	checkProximityAndCollisions(game)
 	updateBeeAnimations(game)
+	animateLevel3(game)
 	return nil
 }
 

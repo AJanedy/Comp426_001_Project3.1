@@ -43,18 +43,18 @@ func getPlayerInput(game *Game) error {
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
-		if time.Since(game.gameTimers.electricityTimer) >= NUKE_SHOT_CLOCK {
+		if time.Since(game.gameTimers.nukeTimer) >= NUKE_SHOT_CLOCK {
 			game.player.nukes = append(game.player.nukes,
 				setupStationaryAttack(*game))
-			game.gameTimers.electricityTimer = time.Now()
+			game.gameTimers.nukeTimer = time.Now()
 		}
 	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		if time.Since(game.gameTimers.nukeTimer) >= ELECTRICITY_SHOT_CLOCK {
+		if time.Since(game.gameTimers.electricityTimer) >= ELECTRICITY_SHOT_CLOCK {
 			mouseX, mouseY := ebiten.CursorPosition()
 			game.player.iceWalls = append(game.player.iceWalls,
 				setupShootingAttack(mouseX, mouseY, *game))
-			game.gameTimers.nukeTimer = time.Now()
+			game.gameTimers.electricityTimer = time.Now()
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
@@ -63,7 +63,7 @@ func getPlayerInput(game *Game) error {
 			disappearPlayer(game)
 
 			go reappearPlayer(game, mouseX, mouseY)
-			//game.player.canMove = true
+			game.gameTimers.teleportTimer = time.Now()
 		}
 	}
 	return nil

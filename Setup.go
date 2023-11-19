@@ -5,11 +5,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/lafriks/go-tiled"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"log"
 	"math"
 	"math/rand"
+	"os"
+	"path"
 	"time"
 )
 
@@ -20,16 +23,70 @@ func setupGameWindow() {
 }
 func setupGameStruct() Game {
 	game := Game{
-		player:     setupPlayerAsset(),
-		cursor:     setupCursor(),
-		animations: setUpAnimations(),
-		gameSounds: setupGameSounds(),
-		gameTimers: setupGameTimers(),
-		typeface:   setupTypeFace(),
-		enemies:    setupEnemyAssets(),
-		gameHUD:    setupHUD(),
+		maps:         setupAllMaps(),
+		barrierTiles: make([]BarrierTile, 0, 448),
+		player:       setupPlayerAsset(),
+		cursor:       setupCursor(),
+		animations:   setUpAnimations(),
+		gameSounds:   setupGameSounds(),
+		gameTimers:   setupGameTimers(),
+		typeface:     setupTypeFace(),
+		enemies:      setupEnemyAssets(),
+		gameHUD:      setupHUD(),
+	}
+	game.maps.level3 = append(game.maps.level3,
+		setupMap(path.Join("maps", "boss_level_map_1.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_2.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_3.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_4.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_5.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_6.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_7.tmx")),
+		setupMap(path.Join("maps", "boss_level_map_8.tmx")))
+	for i, _ := range game.maps.level3 {
+		for tileY := 0; tileY < game.maps.level3[i].level.Height; tileY += 1 {
+			for tileX := 0; tileX < game.maps.level3[i].level.Width; tileX += 1 {
+				TileXpos := float64(game.maps.level3[i].level.TileWidth * tileX)
+				TileYpos := float64(game.maps.level3[i].level.TileHeight * tileY)
+				TileHeight := float64(game.maps.level3[i].level.TileHeight)
+				TileWidth := float64(game.maps.level3[i].level.TileWidth)
+
+				if game.maps.level3[i].level.Layers[1].
+					Tiles[tileY*game.maps.level3[i].level.Width+tileX].ID != 0 {
+					game.barrierTiles = append(game.barrierTiles, BarrierTile{
+						barrierTile: *game.maps.level3[i].level.Layers[1].
+							Tiles[tileY*game.maps.level3[i].level.Width+tileX],
+						xLoc:   int(TileXpos),
+						yLoc:   int(TileYpos),
+						height: int(TileHeight),
+						width:  int(TileWidth),
+					})
+				}
+			}
+		}
 	}
 	return game
+}
+func setupAllMaps() AllMaps {
+	level3Maps := make([]Map, 0, 8)
+	gameMaps := AllMaps{
+		level2: setupMap(path.Join("maps", "bee_hive.tmx")),
+		level3: level3Maps,
+	}
+	return gameMaps
+}
+func setupMap(fileName string) Map {
+	mapPointer, err := tiled.LoadFile(fileName)
+	if err != nil {
+		fmt.Printf("error parsing map: %s", err.Error())
+		os.Exit(2)
+	}
+	gameMap := makeEbitenImagesFromMap(*mapPointer)
+	levelMap := Map{
+		level:    mapPointer,
+		tileHash: gameMap,
+	}
+	return levelMap
 }
 func setupPlayerAsset() Player {
 	newPlayer := Player{
@@ -131,7 +188,6 @@ func setupEnemy(xLoc int, yLoc int, file string) Enemy {
 		shotTimer:         time.Now(),
 		frame:             rand.Intn(6),
 	}
-	fmt.Println("FIXME: initializing rainbowMan")
 	return enemy
 }
 func setupShootingAttack(xLoc int, yLoc int, game Game) Attack {

@@ -1,6 +1,8 @@
 package main
 
-import "math"
+import (
+	"math"
+)
 
 func moveFireballs(game *Game) {
 	for i, _ := range game.player.fireballs {
@@ -76,12 +78,14 @@ func removeFireball(game *Game, i int) {
 func animatePlayerNuke(game *Game) {
 	for i, _ := range game.player.nukes {
 		incrementPlayerNukeFrameDelay(game)
-		if game.player.nukes[i].frameDelay%EXPLOSION_FRAMES_PER_SHEET == 0 {
-			incrementPlayerNukeRow(game, i)
-			if game.player.nukes[i].row >= EXPLOSION_FRAMES_PER_SHEET {
-				incrementPlayerNukeColumn(game, i)
-				if game.player.nukes[i].column > 4 {
-					removeNuke(game, i)
+		if i < len(game.player.nukes) {
+			if game.player.nukes[i].frameDelay%EXPLOSION_FRAMES_PER_SHEET == 0 {
+				incrementPlayerNukeRow(game, i)
+				if game.player.nukes[i].row >= EXPLOSION_FRAMES_PER_SHEET {
+					incrementPlayerNukeColumn(game, i)
+					if game.player.nukes[i].column > 4 {
+						removeNuke(game, i)
+					}
 				}
 			}
 		}

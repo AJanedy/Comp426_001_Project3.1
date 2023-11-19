@@ -47,11 +47,10 @@ func LoadWav(soundFile string, context *audio.Context) *audio.Player {
 }
 
 func makeEbitenImagesFromMap(tiledMap tiled.Map) map[uint32]*ebiten.Image {
-	fmt.Println("here")
 	idToImage := make(map[uint32]*ebiten.Image)
 	for _, tile := range tiledMap.Tilesets[0].Tiles {
 		ebitenImageTile, _, err :=
-			ebitenutil.NewImageFromFile(tile.Image.Source)
+			ebitenutil.NewImageFromFile(path.Join("tiles", tile.Image.Source))
 		if err != nil {
 			fmt.Println("Error loading tile image:",
 				tile.Image.Source, err)

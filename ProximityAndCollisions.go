@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/co0p/tankism/lib/collision"
+	"golang.org/x/sys/windows"
 	"math"
 )
 
@@ -13,6 +14,11 @@ func checkProximityAndCollisions(game *Game) {
 	checkShotsTakenAtEnemy1(game)
 	checkEnemy1ShotsFired(game)
 	checkPlayerEnemy1Proximity(game)
+	for i, _ := range game.barrierTiles {
+		if checkBarrierCollision(game, i) {
+			game.wallDetected = true
+		}
+	}
 }
 func checkShotsTakenAtEnemy1(game *Game) {
 	for i, _ := range game.enemies.rainbowMan {
@@ -93,6 +99,26 @@ func checkPlayerEnemy1Proximity(game *Game) {
 			game.enemies.rainbowMan[i].isChasing = false
 		}
 	}
+}
+func checkBarrierCollision(game *Game, i int) bool {
+	playerBounds := collision.BoundingBox{
+		X:      float64(game.player.xLoc),
+		Y:      float64(game.player.yLoc),
+		Width:  float64(PLAYER_FRAME_WIDTH),
+		Height: float64(PLAYER_FRAME_HEIGHT),
+	}
+	barrierBounds := collision.BoundingBox{
+		X:      float64(game.barrierTiles[i].xLoc),
+		Y:      float64(game.barrierTiles[i].yLoc),
+		Width:  float64(game.barrierTiles[i].width),
+		Height: float64(game.barrierTiles[i].height),
+	}
+	if collision.AABBCollision(playerBounds, barrierBounds) {
+		game.wallLocation = windows.Coord{int16(game.barrierTiles[i].xLoc),
+			int16(game.barrierTiles[i].yLoc)}
+		return true
+	}
+	return false
 }
 
 //func checkArmorPotCollision(game *Game) bool {

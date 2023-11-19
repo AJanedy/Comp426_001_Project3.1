@@ -81,6 +81,15 @@ func animateRainbowMen(game *Game) {
 		}
 	}
 }
+func animateLevel3(game *Game) {
+	game.maps.frameDelay += 1
+	if game.maps.frameDelay%FRAMES_PER_SHEET == 0 {
+		game.maps.frame += 1
+		if game.maps.frame >= 8 {
+			game.maps.frame = 1
+		}
+	}
+}
 func incrementEnemy1FrameDelay(game *Game, i int) {
 	game.enemies.rainbowMan[i].frameDelay += 1
 }
