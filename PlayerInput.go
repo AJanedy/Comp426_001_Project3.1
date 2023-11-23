@@ -37,7 +37,7 @@ func getPlayerInput(game *Game) error {
 		if time.Since(game.gameTimers.fireballTimer) >= FIREBALL_SHOT_CLOCK {
 			mouseX, mouseY := ebiten.CursorPosition()
 			game.player.fireballs = append(game.player.fireballs,
-				setupShootingAttack(mouseX, mouseY, *game))
+				setupFireballAttack(mouseX, mouseY, *game))
 			playAvidiKidiviSound(game)
 			game.gameTimers.fireballTimer = time.Now()
 		}
@@ -45,25 +45,20 @@ func getPlayerInput(game *Game) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
 		if time.Since(game.gameTimers.nukeTimer) >= NUKE_SHOT_CLOCK {
 			game.player.nukes = append(game.player.nukes,
-				setupStationaryAttack(*game))
+				setupNukeAttack(*game))
+			playAvadaKedavraSound(game)
 			game.gameTimers.nukeTimer = time.Now()
-		}
-	}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		if time.Since(game.gameTimers.electricityTimer) >= ELECTRICITY_SHOT_CLOCK {
-			mouseX, mouseY := ebiten.CursorPosition()
-			game.player.iceWalls = append(game.player.iceWalls,
-				setupShootingAttack(mouseX, mouseY, *game))
-			game.gameTimers.electricityTimer = time.Now()
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
 		if time.Since(game.gameTimers.teleportTimer) >= TELEPORT_SHOT_CLOCK {
 			mouseX, mouseY := game.cursor.xLoc, game.cursor.yLoc
-			disappearPlayer(game)
-
-			go reappearPlayer(game, mouseX, mouseY)
-			game.gameTimers.teleportTimer = time.Now()
+			if 70 < mouseX && mouseX < 890 && 70 < mouseY && mouseY < 890 {
+				playTeleportSound(game)
+				disappearPlayer(game)
+				go reappearPlayer(game, mouseX, mouseY)
+				game.gameTimers.teleportTimer = time.Now()
+			}
 		}
 	}
 	return nil

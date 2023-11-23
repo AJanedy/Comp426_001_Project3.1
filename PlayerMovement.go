@@ -38,82 +38,82 @@ func animatePlayer(game *Game) {
 
 func moveNorth(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc += 4
+		game.player.yLoc += 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc -= 1
+		game.player.yLoc -= float64(game.player.moveSpeed)
 		game.player.direction = NORTH
 	}
 }
 func moveNorthEast(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc += 4
-		game.player.xLoc -= 4
+		game.player.yLoc += 30
+		game.player.xLoc -= 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc -= 1
-		game.player.xLoc += 1
+		game.player.yLoc -= float64(game.player.moveSpeed)
+		game.player.xLoc += float64(game.player.moveSpeed)
 		game.player.direction = NORTH_EAST
 	}
 }
 func moveEast(game *Game) {
 	if game.wallDetected {
-		game.player.xLoc -= 4
+		game.player.xLoc -= 30
 		game.wallDetected = false
 	} else {
-		game.player.xLoc += 1
+		game.player.xLoc += float64(game.player.moveSpeed)
 		game.player.direction = EAST
 	}
 }
 func moveSouthEast(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc -= 4
-		game.player.xLoc -= 4
+		game.player.yLoc -= 30
+		game.player.xLoc -= 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc += 1
-		game.player.xLoc += 1
+		game.player.yLoc += float64(game.player.moveSpeed)
+		game.player.xLoc += float64(game.player.moveSpeed)
 		game.player.direction = SOUTH_EAST
 	}
 }
 func moveSouth(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc -= 4
+		game.player.yLoc -= 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc += 1
+		game.player.yLoc += float64(game.player.moveSpeed)
 		game.player.direction = SOUTH
 	}
 }
 func moveSouthWest(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc -= 4
-		game.player.xLoc += 4
+		game.player.yLoc -= 30
+		game.player.xLoc += 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc += 1
-		game.player.xLoc -= 1
+		game.player.yLoc += float64(game.player.moveSpeed)
+		game.player.xLoc -= float64(game.player.moveSpeed)
 		game.player.direction = SOUTH_WEST
 	}
 
 }
 func moveWest(game *Game) {
 	if game.wallDetected {
-		game.player.xLoc += 4
+		game.player.xLoc += 30
 		game.wallDetected = false
 	} else {
-		game.player.xLoc -= 1
+		game.player.xLoc -= float64(game.player.moveSpeed)
 		game.player.direction = WEST
 	}
 }
 func moveNorthWest(game *Game) {
 	if game.wallDetected {
-		game.player.yLoc += 4
-		game.player.xLoc += 4
+		game.player.yLoc += 30
+		game.player.xLoc += 30
 		game.wallDetected = false
 	} else {
-		game.player.yLoc -= 1
-		game.player.xLoc -= 1
+		game.player.yLoc -= float64(game.player.moveSpeed)
+		game.player.xLoc -= float64(game.player.moveSpeed)
 		game.player.direction = NORTH_WEST
 	}
 }

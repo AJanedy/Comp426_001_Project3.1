@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	WINDOW_WIDTH           = 960
-	WINDOW_HEIGHT          = 960
-	PLAYER_FRAME_WIDTH     = 31
-	PLAYER_FRAME_HEIGHT    = 46
-	FRAMES_PER_SHEET       = 8
-	FIREBALL_SHOT_CLOCK    = time.Second * 3
-	ELECTRICITY_SHOT_CLOCK = time.Second * 5
-	NUKE_SHOT_CLOCK        = time.Second * 15
-	TELEPORT_SHOT_CLOCK    = time.Second * 10
+	WINDOW_WIDTH        = 960
+	WINDOW_HEIGHT       = 960
+	PLAYER_FRAME_WIDTH  = 31
+	PLAYER_FRAME_HEIGHT = 46
+	FRAMES_PER_SHEET    = 8
+	FIREBALL_SHOT_CLOCK = time.Second * 3
+	BEE_SHOT_CLOCK      = time.Second * 2
+	NUKE_SHOT_CLOCK     = time.Second
+	TELEPORT_SHOT_CLOCK = time.Second * 10
 )
 const (
 	NORTH = iota
@@ -34,9 +34,18 @@ const (
 	STAND_STILL
 )
 const (
+	HEALTH_POT = iota
+	SPEED_POT
+	MANA_POT
+	KEY
+)
+const (
 	BEE_FRAME_WIDTH              = 100
 	BEE_FRAME_HEIGHT             = 100
 	BEE_FRAMES_PER_SHEET         = 5
+	SMILEY_FRAME_WIDTH           = 151
+	SMILEY_FRAME_HEIGHT          = 237
+	SMILEY_FRAMES_PER_SHEET      = 6
 	PLAYER_FIREBALL_FRAME_WIDTH  = 38
 	PLAYER_FIREBALL_FRAME_HEIGHT = 37
 	ENEMY_ATTACK_FRAME_WIDTH     = 63
@@ -44,9 +53,22 @@ const (
 	EXPLOSION_FRAME_WIDTH        = 100
 	EXPLOSION_FRAME_HEIGHT       = 73
 	EXPLOSION_FRAMES_PER_SHEET   = 5
+	HEART_FRAME_WIDTH            = 30
+	HEART_FRAME_HEIGHT           = 30
+	HEARTS_PER_SHEET             = 10
+	SPEED_BOOST_FRAME_WIDTH      = 30
+	SPEED_BOOST_FRAME_HEIGHT     = 33
+	SPEED_BOOST_PER_SHEET        = 6
+	MANA_POT_FRAME_WIDTH         = 21
+	MANA_POT_FRAME_HEIGHT        = 44
+	MANA_POT_FRAMES_PER_SHEET    = 7
+	KEY_FRAME_WIDTH              = 30
+	KEY_FRAME_HEIGHT             = 60
+	KEY_FRAMES_PER_SHEET         = 9
 )
 const (
-	ATTACK_1_BASE_DAMAGE = 25
+	FIREBALL_BASE_DAMAGE    = 25
+	NUKE_ATTACK_BASE_DAMAGE = 2
 )
 
 type Map struct {
@@ -68,22 +90,31 @@ type BarrierTile struct {
 	width       int
 }
 type Player struct {
-	playerSprite *ebiten.Image
-	fireballs    []Attack
-	nukes        []Attack
-	iceWalls     []Attack
-	xLoc         float64
-	yLoc         float64
-	maxHealth    int
-	health       int
-	magicPower   int
-	armor        int
-	castSpeed    int
-	direction    int
-	canMove      bool
-	isMoving     bool
-	frame        int
-	frameDelay   int
+	playerSprite  *ebiten.Image
+	fireballs     []Attack
+	nukes         []Attack
+	xLoc          float64
+	yLoc          float64
+	keysCollected int
+	maxHealth     int
+	moveSpeed     float64
+	health        int
+	magicPower    float64
+	direction     int
+	canMove       bool
+	isMoving      bool
+	frame         int
+	frameDelay    int
+}
+type PowerUps struct {
+	powerUpSprite Animation
+	xLoc          int
+	yLoc          int
+	powerUpType   int
+	row           int
+	column        int
+	frame         int
+	frameDelay    int
 }
 type Movement struct {
 	moveNorth     bool
@@ -103,7 +134,8 @@ type Enemy struct {
 	yLoc              float64
 	startingXLoc      float64
 	startingYLoc      float64
-	health            int
+	angle             float64
+	health            float64
 	attackPower       int
 	degreesDirection  float64
 	radiansDirection  float64
@@ -118,8 +150,8 @@ type Enemy struct {
 }
 type AllEnemies struct {
 	rainbowMan []Enemy
-	bee        []Enemy
-	enemy3     []Enemy
+	bees       []Enemy
+	smileyMan  Enemy
 }
 type Attack struct {
 	animation  *ebiten.Image
@@ -138,29 +170,29 @@ type Animation struct {
 	animation *ebiten.Image
 }
 type AllAnimations struct {
-	fireball     Animation
-	explosion    Animation
-	enemy1Attack Animation
-	iceWall      Animation
+	fireball         Animation
+	explosion        Animation
+	rainbowManAttack Animation
+	beeAttack        Animation
+	gameOver         Animation
+	victory          Animation
+	heart            Animation
+	speedBoost       Animation
+	manaPot          Animation
+	key              Animation
 }
 type SoundEffects struct {
 	playerFire    *audio.Player
+	playerNuke    *audio.Player
+	teleport      *audio.Player
 	playerStruck  *audio.Player
-	playerKilled  *audio.Player
-	powerUp1      *audio.Player
-	powerUp2      *audio.Player
-	powerUp3      *audio.Player
-	enemy1Strike  *audio.Player
-	enemy2Strike  *audio.Player
-	enemy3Strike  *audio.Player
-	enemy1Struck  *audio.Player
-	enemy2Struck  *audio.Player
-	enemy3Struck  *audio.Player
-	enemy1Killed  *audio.Player
-	enemy2Killed  *audio.Player
-	enemy3Killed  *audio.Player
+	powerUp       *audio.Player
+	enemyFired    *audio.Player
+	enemyKilled   *audio.Player
+	enemyStruck   *audio.Player
 	gameOverSound *audio.Player
 	gameWonSound  *audio.Player
+	gameMusic     *audio.Player
 }
 type HUD struct {
 	WASD *ebiten.Image
@@ -178,11 +210,13 @@ type GameTimers struct {
 }
 type Game struct {
 	maps         AllMaps
+	level        int
 	barrierTiles []BarrierTile
 	wallLocation windows.Coord
 	wallDetected bool
 	cursor       Cursor
 	player       Player
+	powerUps     []PowerUps
 	direction    Movement
 	enemies      AllEnemies
 	animations   AllAnimations

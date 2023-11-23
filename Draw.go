@@ -10,41 +10,46 @@ import (
 )
 
 func (game Game) Draw(screen *ebiten.Image) {
-	//drawLevelTwo(game, screen)
-	drawLevelThree(game, screen)
-	drawPlayerAnimations(game, screen)
-	drawHud(game, screen)
-	//drawEnemy1Animations(game, screen)
-	//drawEnemy2Animations(game, screen)
+	if game.level == 1 {
+		drawLevelThree(game, screen)
+		drawHud(game, screen)
+		drawPlayerAnimations(game, screen)
+		drawRainbowManAnimations(game, screen)
+	}
+	if game.level == 2 {
+		drawLevelThree(game, screen)
+		drawHud(game, screen)
+		drawPlayerAnimations(game, screen)
+		drawBeeAnimations(game, screen)
+	}
+	if game.level == 3 {
+		drawLevelThree(game, screen)
+		drawHud(game, screen)
+		drawSmileyMan(game, screen)
+		drawPlayerAnimations(game, screen)
+	}
+	if game.level == 0 {
+		drawGameOver(game, screen)
+	}
+	if game.level == 4 {
+		drawVictory(game, screen)
+	}
+	drawHearts(game, screen)
+	drawSpeedBoost(game, screen)
+	drawManaPot(game, screen)
+	drawKey(game, screen)
 }
-func drawLevelTwo(game Game, screen *ebiten.Image) {
+func drawGameOver(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
-	for tileY := 0; tileY < game.maps.level2.level.Height; tileY += 1 {
-		for tileX := 0; tileX < game.maps.level2.level.Width; tileX += 1 {
-			drawOptions.GeoM.Reset()
-			TileXpos := float64(game.maps.level2.level.TileWidth * tileX)
-			TileYpos := float64(game.maps.level2.level.TileHeight * tileY)
-			drawOptions.GeoM.Translate(TileXpos, TileYpos)
-			tileToDraw :=
-				game.maps.level2.level.Layers[0].Tiles[tileY*game.maps.level2.level.Width+tileX]
-			ebitenTileToDraw := game.maps.level2.tileHash[tileToDraw.ID]
-			screen.DrawImage(ebitenTileToDraw,
-				drawOptions)
-		}
-	}
-	for tileY := 0; tileY < game.maps.level2.level.Height; tileY += 1 {
-		for tileX := 0; tileX < game.maps.level2.level.Width; tileX += 1 {
-			drawOptions.GeoM.Reset()
-			TileXpos := float64(game.maps.level2.level.TileWidth * tileX)
-			TileYpos := float64(game.maps.level2.level.TileHeight * tileY)
-			drawOptions.GeoM.Translate(TileXpos, TileYpos)
-			tileToDraw :=
-				game.maps.level2.level.Layers[1].Tiles[tileY*game.maps.level2.level.Width+tileX]
-			ebitenTileToDraw := game.maps.level2.tileHash[tileToDraw.ID]
-			screen.DrawImage(ebitenTileToDraw,
-				drawOptions)
-		}
-	}
+	drawOptions.GeoM.Reset()
+	drawOptions.GeoM.Translate(180, 200)
+	screen.DrawImage(game.animations.gameOver.animation, drawOptions)
+}
+func drawVictory(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Reset()
+	drawOptions.GeoM.Translate(0, 300)
+	screen.DrawImage(game.animations.victory.animation, drawOptions)
 }
 func drawLevelThree(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
@@ -79,7 +84,6 @@ func drawPlayerAnimations(game Game, screen *ebiten.Image) {
 	drawPlayer(game, screen)
 	drawFireBalls(game, screen)
 	drawNukes(game, screen)
-	drawIceWalls(game, screen)
 }
 func drawHud(game Game, screen *ebiten.Image) {
 	drawHealthBar(game, screen)
@@ -88,12 +92,73 @@ func drawHud(game Game, screen *ebiten.Image) {
 	drawCursor(game, screen)
 	drawWASD(game, screen)
 }
-func drawEnemy1Animations(game Game, screen *ebiten.Image) {
-	drawLevelOneEnemies(game, screen)
-	drawLevelOneEnemiesAttack(game, screen)
+func drawHearts(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for i, _ := range game.powerUps {
+		if game.powerUps[i].powerUpType == HEALTH_POT {
+			drawOptions.GeoM.Reset()
+			drawOptions.GeoM.Translate(float64(game.powerUps[i].xLoc), float64(game.powerUps[i].yLoc))
+			screen.DrawImage(game.animations.heart.animation.SubImage(image.Rect(
+				game.powerUps[i].row*HEART_FRAME_WIDTH,
+				game.powerUps[i].column*HEART_FRAME_HEIGHT,
+				game.powerUps[i].row*HEART_FRAME_WIDTH+HEART_FRAME_WIDTH,
+				game.powerUps[i].column*HEART_FRAME_HEIGHT+HEART_FRAME_HEIGHT)).(*ebiten.Image),
+				drawOptions)
+		}
+	}
 }
-func drawEnemy2Animations(game Game, screen *ebiten.Image) {
-	drawLevel2Enemies(game, screen)
+func drawSpeedBoost(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for i, _ := range game.powerUps {
+		if game.powerUps[i].powerUpType == SPEED_POT {
+			drawOptions.GeoM.Reset()
+			drawOptions.GeoM.Translate(float64(game.powerUps[i].xLoc), float64(game.powerUps[i].yLoc))
+			screen.DrawImage(game.animations.speedBoost.animation.SubImage(image.Rect(
+				game.powerUps[i].row*SPEED_BOOST_FRAME_WIDTH,
+				game.powerUps[i].column*SPEED_BOOST_FRAME_HEIGHT,
+				game.powerUps[i].row*SPEED_BOOST_FRAME_WIDTH+SPEED_BOOST_FRAME_WIDTH,
+				game.powerUps[i].column*SPEED_BOOST_FRAME_HEIGHT+SPEED_BOOST_FRAME_HEIGHT)).(*ebiten.Image),
+				drawOptions)
+		}
+	}
+}
+func drawManaPot(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for i, _ := range game.powerUps {
+		if game.powerUps[i].powerUpType == MANA_POT {
+			drawOptions.GeoM.Reset()
+			drawOptions.GeoM.Translate(float64(game.powerUps[i].xLoc), float64(game.powerUps[i].yLoc))
+			screen.DrawImage(game.animations.manaPot.animation.SubImage(image.Rect(
+				game.powerUps[i].row*MANA_POT_FRAME_WIDTH,
+				game.powerUps[i].column*MANA_POT_FRAME_HEIGHT,
+				game.powerUps[i].row*MANA_POT_FRAME_WIDTH+MANA_POT_FRAME_WIDTH,
+				game.powerUps[i].column*MANA_POT_FRAME_HEIGHT+MANA_POT_FRAME_HEIGHT)).(*ebiten.Image),
+				drawOptions)
+		}
+	}
+}
+func drawKey(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for i, _ := range game.powerUps {
+		if game.powerUps[i].powerUpType == KEY {
+			drawOptions.GeoM.Reset()
+			drawOptions.GeoM.Translate(float64(game.powerUps[i].xLoc), float64(game.powerUps[i].yLoc))
+			screen.DrawImage(game.animations.key.animation.SubImage(image.Rect(
+				game.powerUps[i].row*KEY_FRAME_WIDTH,
+				game.powerUps[i].column*KEY_FRAME_HEIGHT,
+				game.powerUps[i].row*KEY_FRAME_WIDTH+KEY_FRAME_WIDTH,
+				game.powerUps[i].column*KEY_FRAME_HEIGHT+KEY_FRAME_HEIGHT)).(*ebiten.Image),
+				drawOptions)
+		}
+	}
+}
+func drawRainbowManAnimations(game Game, screen *ebiten.Image) {
+	drawRainbowMan(game, screen)
+	drawRainbowManAttacks(game, screen)
+}
+func drawBeeAnimations(game Game, screen *ebiten.Image) {
+	drawBees(game, screen)
+	drawBeeAttacks(game, screen)
 }
 func drawPlayer(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
@@ -125,19 +190,6 @@ func drawFireBalls(game Game, screen *ebiten.Image) {
 			drawOptions)
 	}
 }
-func drawIceWalls(game Game, screen *ebiten.Image) {
-	drawOptions := &ebiten.DrawImageOptions{}
-	for i, _ := range game.player.iceWalls {
-		drawOptions.GeoM.Reset()
-		drawOptions.GeoM.Translate(game.player.iceWalls[i].xLoc, game.player.iceWalls[i].yLoc)
-		screen.DrawImage(game.animations.iceWall.animation.SubImage(image.Rect(
-			game.player.iceWalls[i].row*ENEMY_ATTACK_FRAME_WIDTH,
-			game.player.iceWalls[i].column*ENEMY_ATTACK_FRAME_HEIGHT,
-			game.player.iceWalls[i].row*ENEMY_ATTACK_FRAME_WIDTH+ENEMY_ATTACK_FRAME_WIDTH,
-			game.player.iceWalls[i].column*ENEMY_ATTACK_FRAME_HEIGHT+ENEMY_ATTACK_FRAME_HEIGHT)).(*ebiten.Image),
-			drawOptions)
-	}
-}
 func drawHealthBar(game Game, screen *ebiten.Image) {
 	barWidth := 30.0
 	barHeight := 2
@@ -152,12 +204,13 @@ func drawHealthBar(game Game, screen *ebiten.Image) {
 }
 func drawPlayerAttributes(game Game, screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, "Health: "+strconv.Itoa(game.player.health), 70, 770)
-	ebitenutil.DebugPrintAt(screen, "Armor: "+strconv.Itoa(game.player.armor), 70, 790)
-	ebitenutil.DebugPrintAt(screen, "Magic Power: "+strconv.Itoa(game.player.magicPower), 70, 810)
+	ebitenutil.DebugPrintAt(screen, "Move Speed: "+strconv.FormatFloat(
+		game.player.moveSpeed, 'f', -1, 64), 70, 790)
+	ebitenutil.DebugPrintAt(screen, "Magic Power: "+strconv.FormatFloat(
+		game.player.magicPower, 'f', -1, 64), 70, 810)
 }
 func drawCoolDowns(game Game, screen *ebiten.Image) {
 	fireBallCoolDown := time.Since(game.gameTimers.fireballTimer).Seconds() / 3
-	electricityCoolDown := time.Since(game.gameTimers.electricityTimer).Seconds() / 5
 	nukeCoolDown := time.Since(game.gameTimers.nukeTimer).Seconds() / 15
 	teleportCoolDown := time.Since(game.gameTimers.teleportTimer).Seconds() / 10
 
@@ -166,9 +219,6 @@ func drawCoolDowns(game Game, screen *ebiten.Image) {
 
 	if fireBallCoolDown > 1.0 {
 		fireBallCoolDown = 1
-	}
-	if electricityCoolDown > 1.0 {
-		electricityCoolDown = 1
 	}
 	if nukeCoolDown > 1.0 {
 		nukeCoolDown = 1
@@ -182,22 +232,16 @@ func drawCoolDowns(game Game, screen *ebiten.Image) {
 	ebitenutil.DrawRect(screen, 145, 835, float64(barWidth)*fireBallCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Electricity               RClick", 70, 850)
+	ebitenutil.DebugPrintAt(screen, "Nuke                      Q", 70, 850)
 	ebitenutil.DrawRect(screen, 145, 855, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 145, 855, float64(barWidth)*electricityCoolDown,
+	ebitenutil.DrawRect(screen, 145, 855, float64(barWidth)*nukeCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 
-	ebitenutil.DebugPrintAt(screen, "Nuke                      Q", 70, 870)
+	ebitenutil.DebugPrintAt(screen, "Teleport                  E", 70, 870)
 	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth),
 		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth)*nukeCoolDown,
-		float64(barHeight), color.RGBA{255, 0, 0, 255})
-
-	ebitenutil.DebugPrintAt(screen, "Teleport                  E", 70, 890)
-	ebitenutil.DrawRect(screen, 145, 895, float64(barWidth),
-		float64(barHeight), color.Gray{192})
-	ebitenutil.DrawRect(screen, 145, 895, float64(barWidth)*teleportCoolDown,
+	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth)*teleportCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
 }
 func drawWASD(game Game, screen *ebiten.Image) {
@@ -207,7 +251,7 @@ func drawWASD(game Game, screen *ebiten.Image) {
 	screen.DrawImage(game.gameHUD.WASD, drawOption)
 	ebitenutil.DebugPrintAt(screen, "Movement", 105, 150)
 }
-func drawLevelOneEnemies(game Game, screen *ebiten.Image) {
+func drawRainbowMan(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
 	drawOptions.GeoM.Reset()
 	for i, _ := range game.enemies.rainbowMan {
@@ -221,33 +265,59 @@ func drawLevelOneEnemies(game Game, screen *ebiten.Image) {
 			drawOptions)
 	}
 }
-func drawLevel2Enemies(game Game, screen *ebiten.Image) {
+func drawSmileyMan(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
 	drawOptions.GeoM.Reset()
-	for i, _ := range game.enemies.bee {
+	drawOptions.GeoM.Translate(game.enemies.smileyMan.xLoc, game.enemies.smileyMan.yLoc)
+	screen.DrawImage(game.enemies.smileyMan.enemySprite.SubImage(image.Rect(
+		game.enemies.smileyMan.frame*SMILEY_FRAME_WIDTH,
+		game.enemies.smileyMan.direction*SMILEY_FRAME_HEIGHT,
+		game.enemies.smileyMan.frame*SMILEY_FRAME_WIDTH+SMILEY_FRAME_WIDTH,
+		game.enemies.smileyMan.direction*SMILEY_FRAME_HEIGHT+SMILEY_FRAME_HEIGHT)).(*ebiten.Image),
+		drawOptions)
+}
+func drawBees(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Reset()
+	for i, _ := range game.enemies.bees {
 		drawOptions.GeoM.Reset()
-		drawOptions.GeoM.Translate(game.enemies.bee[i].xLoc, game.enemies.bee[i].yLoc)
-		screen.DrawImage(game.enemies.bee[i].enemySprite.SubImage(image.Rect(
-			game.enemies.bee[i].frame*BEE_FRAME_WIDTH,
-			game.enemies.bee[i].direction*BEE_FRAME_HEIGHT,
-			game.enemies.bee[i].frame*BEE_FRAME_WIDTH+BEE_FRAME_WIDTH,
-			game.enemies.bee[i].direction*BEE_FRAME_HEIGHT+BEE_FRAME_HEIGHT)).(*ebiten.Image),
+		drawOptions.GeoM.Translate(game.enemies.bees[i].xLoc, game.enemies.bees[i].yLoc)
+		screen.DrawImage(game.enemies.bees[i].enemySprite.SubImage(image.Rect(
+			game.enemies.bees[i].frame*BEE_FRAME_WIDTH,
+			game.enemies.bees[i].direction*BEE_FRAME_HEIGHT,
+			game.enemies.bees[i].frame*BEE_FRAME_WIDTH+BEE_FRAME_WIDTH,
+			game.enemies.bees[i].direction*BEE_FRAME_HEIGHT+BEE_FRAME_HEIGHT)).(*ebiten.Image),
 			drawOptions)
 	}
 }
-func drawLevelOneEnemiesAttack(game Game, screen *ebiten.Image) {
+func drawRainbowManAttacks(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
-
 	for i, _ := range game.enemies.rainbowMan {
 		for j, _ := range game.enemies.rainbowMan[i].attacks {
 			drawOptions.GeoM.Reset()
 			drawOptions.GeoM.Translate(game.enemies.rainbowMan[i].attacks[j].xLoc,
 				game.enemies.rainbowMan[i].attacks[j].yLoc)
-			screen.DrawImage(game.animations.enemy1Attack.animation.SubImage(image.Rect(
+			screen.DrawImage(game.animations.rainbowManAttack.animation.SubImage(image.Rect(
 				game.enemies.rainbowMan[i].attacks[j].row*ENEMY_ATTACK_FRAME_WIDTH,
 				game.enemies.rainbowMan[i].attacks[j].column*ENEMY_ATTACK_FRAME_HEIGHT,
 				game.enemies.rainbowMan[i].attacks[j].row*ENEMY_ATTACK_FRAME_WIDTH+ENEMY_ATTACK_FRAME_WIDTH,
 				game.enemies.rainbowMan[i].attacks[j].column*ENEMY_ATTACK_FRAME_HEIGHT+ENEMY_ATTACK_FRAME_HEIGHT)).(*ebiten.Image),
+				drawOptions)
+		}
+	}
+}
+func drawBeeAttacks(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	for i, _ := range game.enemies.bees {
+		for j, _ := range game.enemies.bees[i].attacks {
+			drawOptions.GeoM.Reset()
+			drawOptions.GeoM.Translate(game.enemies.bees[i].attacks[j].xLoc,
+				game.enemies.bees[i].attacks[j].yLoc)
+			screen.DrawImage(game.animations.beeAttack.animation.SubImage(image.Rect(
+				game.enemies.bees[i].attacks[j].row*ENEMY_ATTACK_FRAME_WIDTH,
+				game.enemies.bees[i].attacks[j].column*ENEMY_ATTACK_FRAME_HEIGHT,
+				game.enemies.bees[i].attacks[j].row*ENEMY_ATTACK_FRAME_WIDTH+ENEMY_ATTACK_FRAME_WIDTH,
+				game.enemies.bees[i].attacks[j].column*ENEMY_ATTACK_FRAME_HEIGHT+ENEMY_ATTACK_FRAME_HEIGHT)).(*ebiten.Image),
 				drawOptions)
 		}
 	}
