@@ -35,6 +35,7 @@ func (game *Game) Update() error {
 		checkRainbowMenHitByNukes(game)
 		checkRainbowMenShotsFired(game)
 		checkPlayerRainbowMenProximity(game)
+		checkPlayerQuestGiverProximity(game)
 	}
 	if game.level == 2 {
 		animateLevel3(game)

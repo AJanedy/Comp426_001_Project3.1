@@ -124,6 +124,3 @@ func removeSpentRainbowManFireball(game *Game, i int, j int) {
 		game.enemies.rainbowMan[i].attacks[:len(game.enemies.rainbowMan[i].attacks)-1]
 
 }
-func setupLevelOne(game *Game) {
-	//TODO: initiate
-}

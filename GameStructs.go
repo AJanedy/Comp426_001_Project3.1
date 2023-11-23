@@ -17,7 +17,7 @@ const (
 	FRAMES_PER_SHEET    = 8
 	FIREBALL_SHOT_CLOCK = time.Second * 3
 	BEE_SHOT_CLOCK      = time.Second * 2
-	NUKE_SHOT_CLOCK     = time.Second
+	NUKE_SHOT_CLOCK     = time.Second * 15
 	TELEPORT_SHOT_CLOCK = time.Second * 10
 )
 const (
@@ -96,6 +96,7 @@ type Player struct {
 	xLoc          float64
 	yLoc          float64
 	keysCollected int
+	getMessage    bool
 	maxHealth     int
 	moveSpeed     float64
 	health        int
@@ -170,16 +171,18 @@ type Animation struct {
 	animation *ebiten.Image
 }
 type AllAnimations struct {
-	fireball         Animation
-	explosion        Animation
-	rainbowManAttack Animation
-	beeAttack        Animation
-	gameOver         Animation
-	victory          Animation
-	heart            Animation
-	speedBoost       Animation
-	manaPot          Animation
-	key              Animation
+	fireball          Animation
+	explosion         Animation
+	rainbowManAttack  Animation
+	beeAttack         Animation
+	gameOver          Animation
+	victory           Animation
+	heart             Animation
+	speedBoost        Animation
+	manaPot           Animation
+	key               Animation
+	questGiver        Animation
+	questInstructions Animation
 }
 type SoundEffects struct {
 	playerFire    *audio.Player

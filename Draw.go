@@ -12,7 +12,11 @@ import (
 func (game Game) Draw(screen *ebiten.Image) {
 	if game.level == 1 {
 		drawLevelThree(game, screen)
+		if game.player.getMessage == true {
+			drawQuestMessage(game, screen)
+		}
 		drawHud(game, screen)
+		drawWeirdYellowDude(game, screen)
 		drawPlayerAnimations(game, screen)
 		drawRainbowManAnimations(game, screen)
 	}
@@ -90,7 +94,6 @@ func drawHud(game Game, screen *ebiten.Image) {
 	drawPlayerAttributes(game, screen)
 	drawCoolDowns(game, screen)
 	drawCursor(game, screen)
-	drawWASD(game, screen)
 }
 func drawHearts(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
@@ -177,6 +180,18 @@ func drawCursor(game Game, screen *ebiten.Image) {
 	drawOptions.GeoM.Translate(game.cursor.xLoc, game.cursor.yLoc)
 	screen.DrawImage(game.cursor.cursor, drawOptions)
 }
+func drawWeirdYellowDude(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Reset()
+	drawOptions.GeoM.Translate(150, 150)
+	screen.DrawImage(game.animations.questGiver.animation, drawOptions)
+}
+func drawQuestMessage(game Game, screen *ebiten.Image) {
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Reset()
+	drawOptions.GeoM.Translate(195, 175)
+	screen.DrawImage(game.animations.questInstructions.animation, drawOptions)
+}
 func drawFireBalls(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}
 	for i, _ := range game.player.fireballs {
@@ -243,13 +258,6 @@ func drawCoolDowns(game Game, screen *ebiten.Image) {
 		float64(barHeight), color.Gray{192})
 	ebitenutil.DrawRect(screen, 145, 875, float64(barWidth)*teleportCoolDown,
 		float64(barHeight), color.RGBA{255, 0, 0, 255})
-}
-func drawWASD(game Game, screen *ebiten.Image) {
-	drawOption := &ebiten.DrawImageOptions{}
-	drawOption.GeoM.Reset()
-	drawOption.GeoM.Translate(75, 50)
-	screen.DrawImage(game.gameHUD.WASD, drawOption)
-	ebitenutil.DebugPrintAt(screen, "Movement", 105, 150)
 }
 func drawRainbowMan(game Game, screen *ebiten.Image) {
 	drawOptions := &ebiten.DrawImageOptions{}

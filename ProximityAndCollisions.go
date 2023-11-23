@@ -267,6 +267,16 @@ func checkPlayerRainbowMenProximity(game *Game) {
 		}
 	}
 }
+func checkPlayerQuestGiverProximity(game *Game) {
+	playerX, playerY := game.player.xLoc, game.player.yLoc
+	questGiverX, questGiverY := float64(150), float64(150)
+	distance := math.Sqrt(math.Pow(float64(playerX-questGiverX), 2) + math.Pow(float64(playerY-questGiverY), 2))
+	if distance <= 100 {
+		game.player.getMessage = true
+	} else {
+		game.player.getMessage = false
+	}
+}
 func checkPlayerBeeProximity(game *Game) {
 	for i, _ := range game.enemies.bees {
 		playerX, playerY := game.player.xLoc, game.player.yLoc

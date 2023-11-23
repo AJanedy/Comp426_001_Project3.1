@@ -154,6 +154,12 @@ func setUpAnimations() AllAnimations {
 		victory: Animation{
 			animation: LoadEmbeddedImage("", "victory.png"),
 		},
+		questGiver: Animation{
+			animation: LoadEmbeddedImage("", "weird_yellow_dude.png"),
+		},
+		questInstructions: Animation{
+			animation: LoadEmbeddedImage("", "quest_instructions.png"),
+		},
 	}
 	return AllAnimations
 }
