@@ -16,6 +16,7 @@ func (game *Game) Update() error {
 		}
 	}
 	if game.enemies.smileyMan.health <= 0 {
+		game.gameSounds.bossMusic.Pause()
 		game.level = 4
 	}
 	updatePlayerAnimations(game)
@@ -25,9 +26,18 @@ func (game *Game) Update() error {
 	animateKey(game)
 	checkPowerUpCollision(game)
 
-	if !game.gameSounds.gameMusic.IsPlaying() {
-		playGameMusic(game)
+	if game.level == 1 || game.level == 2 {
+		if !game.gameSounds.gameMusic.IsPlaying() {
+			playGameMusic(game)
+		}
 	}
+	if game.level == 3 {
+		game.gameSounds.gameMusic.Pause()
+		if !game.gameSounds.bossMusic.IsPlaying() {
+			playBossMusic(game)
+		}
+	}
+
 	if game.level == 1 {
 		animateLevel3(game)
 		updateRainbowMenAnimations(game)

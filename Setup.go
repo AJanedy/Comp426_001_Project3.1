@@ -177,6 +177,7 @@ func setupGameSounds() SoundEffects {
 		enemyStruck:   LoadWav("ow.wav", soundContext),
 		enemyKilled:   LoadWav("blegh.wav", soundContext),
 		gameMusic:     LoadWav("music.wav", soundContext),
+		bossMusic:     LoadWav("final_boss.wav", soundContext),
 		gameOverSound: LoadWav("game_over.wav", soundContext),
 		gameWonSound:  LoadWav("fanfare.wav", soundContext),
 	}

@@ -25,6 +25,11 @@ func playGameMusic(game *Game) {
 	game.gameSounds.gameMusic.SetVolume(.4)
 	game.gameSounds.gameMusic.Play()
 }
+func playBossMusic(game *Game) {
+	game.gameSounds.bossMusic.Rewind()
+	game.gameSounds.bossMusic.SetVolume(.4)
+	game.gameSounds.bossMusic.Play()
+}
 func playTeleportSound(game *Game) {
 	game.gameSounds.teleport.Rewind()
 	game.gameSounds.teleport.Play()

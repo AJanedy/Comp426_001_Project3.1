@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/co0p/tankism/lib/collision"
-	"golang.org/x/sys/windows"
 	"math"
 )
 
@@ -303,8 +302,6 @@ func checkBarrierCollision(game *Game, i int) bool {
 		Height: float64(game.barrierTiles[i].height),
 	}
 	if collision.AABBCollision(playerBounds, barrierBounds) {
-		game.wallLocation = windows.Coord{int16(game.barrierTiles[i].xLoc),
-			int16(game.barrierTiles[i].yLoc)}
 		return true
 	}
 	return false

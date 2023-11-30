@@ -5,7 +5,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/lafriks/go-tiled"
 	"golang.org/x/image/font"
-	"golang.org/x/sys/windows"
 	"time"
 )
 
@@ -196,6 +195,7 @@ type SoundEffects struct {
 	gameOverSound *audio.Player
 	gameWonSound  *audio.Player
 	gameMusic     *audio.Player
+	bossMusic     *audio.Player
 }
 type HUD struct {
 	WASD *ebiten.Image
@@ -215,7 +215,6 @@ type Game struct {
 	maps         AllMaps
 	level        int
 	barrierTiles []BarrierTile
-	wallLocation windows.Coord
 	wallDetected bool
 	cursor       Cursor
 	player       Player
